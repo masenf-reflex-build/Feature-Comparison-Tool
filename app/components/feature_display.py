@@ -12,13 +12,13 @@ TOOLTIP_PROPS = {
     "wrapper_style": {"z_index": 1000},
     "content_style": {
         "background_color": "white",
-        "border": "1px solid #e0e0e0",
-        "border_radius": "0.25rem",
-        "box_shadow": "0 1px 3px rgba(0,0,0,0.1)",
+        "border": "2px solid black",
+        "padding": "8px",
+        "box_shadow": "2px 2px 0px #000000",
     },
-    "item_style": {"color": "#333"},
+    "item_style": {"color": "#1f2937"},
     "label_style": {
-        "color": "#003366",
+        "color": "#059669",
         "font_weight": "bold",
     },
 }
@@ -34,13 +34,13 @@ def _render_bar_chart(
             is_loading,
             rx.el.div(
                 rx.spinner(
-                    class_name="text-blue-500 h-8 w-8"
+                    class_name="text-emerald-600 h-8 w-8"
                 ),
                 rx.el.p(
                     "Loading chart data...",
-                    class_name="text-gray-600 mt-2",
+                    class_name="text-neutral-600 mt-2 font-medium",
                 ),
-                class_name="flex flex-col items-center justify-center h-72",
+                class_name="flex flex-col items-center justify-center h-full",
             ),
             rx.cond(
                 chart_data.length() > 0,
@@ -49,7 +49,7 @@ def _render_bar_chart(
                         stroke_dasharray="3 3",
                         horizontal=True,
                         vertical=False,
-                        class_name="opacity-30",
+                        class_name="stroke-neutral-300 opacity-75",
                     ),
                     rx.recharts.graphing_tooltip(
                         **TOOLTIP_PROPS
@@ -59,36 +59,35 @@ def _render_bar_chart(
                         name="Feature",
                         tick_line=False,
                         axis_line=False,
-                        class_name="text-xs text-gray-600",
+                        class_name="text-xs text-neutral-700 fill-neutral-700 font-medium",
                     ),
                     rx.recharts.y_axis(
                         tick_line=False,
                         axis_line=False,
                         allow_decimals=True,
-                        class_name="text-xs text-gray-600",
+                        class_name="text-xs text-neutral-700 fill-neutral-700 font-medium",
                         label={
                             "value": "Value",
                             "angle": -90,
                             "position": "insideLeft",
                             "style": {
                                 "text_anchor": "middle",
-                                "fill": "#666",
+                                "fill": "#404040",
                                 "font_size": "12px",
+                                "font_weight": "500",
                             },
                         },
                     ),
                     rx.recharts.bar(
                         data_key="Current_Value",
                         name="Current Value",
-                        fill="#3b82f6",
-                        radius=[4, 4, 0, 0],
+                        fill="#059669",
                         bar_size=30,
                     ),
                     rx.recharts.bar(
                         data_key="Optimal_Value",
                         name="Optimal Value",
-                        fill="#10b981",
-                        radius=[4, 4, 0, 0],
+                        fill="#0ea5e9",
                         bar_size=30,
                     ),
                     data=chart_data,
@@ -100,7 +99,7 @@ def _render_bar_chart(
                         "left": 10,
                         "bottom": 5,
                     },
-                    class_name="bg-white rounded-lg",
+                    class_name="bg-white",
                 ),
                 rx.el.div(
                     rx.cond(
@@ -109,36 +108,37 @@ def _render_bar_chart(
                             "No data to display for ",
                             rx.el.span(
                                 feature_name,
-                                class_name="font-semibold",
+                                class_name="font-semibold text-emerald-700",
                             ),
-                            ". This might be due to missing values or a data processing error.",
+                            ".",
                         ),
                         rx.el.p(
                             "Select a feature to display its graph."
                         ),
                     ),
-                    class_name="flex items-center justify-center h-72 text-gray-500 text-sm p-4 text-center",
+                    class_name="flex items-center justify-center h-full text-neutral-500 text-sm p-4 text-center font-medium",
                 ),
             ),
         ),
-        class_name="w-full p-1 border border-gray-200 rounded-lg shadow-sm bg-white min-h-[350px]",
+        class_name="w-full p-1 border-2 border-black bg-white min-h-[350px] shadow-[4px_4px_0px_#000000]",
     )
 
 
 def feature_comparison_dashboard() -> rx.Component:
     return rx.el.div(
         rx.el.h1(
-            "Feature Experimentation Dashboard",
-            class_name="text-3xl font-bold text-gray-800 mb-8 text-center",
+            "Feature Experiment Dashboard",
+            class_name="text-4xl font-bold text-black mb-12 text-center tracking-tight",
         ),
         rx.cond(
             FeatureState.error_message != "",
             rx.el.div(
                 rx.el.strong(
-                    "Error: ", class_name="font-bold"
+                    "Error: ",
+                    class_name="font-bold text-red-700",
                 ),
                 FeatureState.error_message,
-                class_name="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative mb-6 shadow",
+                class_name="bg-red-100 border-2 border-red-600 text-red-700 px-4 py-3 mb-8 font-medium shadow-[4px_4px_0px_#ef4444]",
                 role="alert",
             ),
             rx.fragment(),
@@ -146,90 +146,100 @@ def feature_comparison_dashboard() -> rx.Component:
         rx.el.div(
             rx.el.div(
                 rx.el.label(
-                    "Select Feature 1:",
-                    class_name="block text-md font-semibold text-gray-700 mb-2",
+                    "Feature A",
+                    class_name="block text-xl font-bold text-black mb-3",
                 ),
                 rx.el.select(
                     rx.el.option(
                         "Select Feature...",
                         value="",
                         disabled=FeatureState.is_loading_features,
+                        class_name="text-neutral-500",
                     ),
                     rx.foreach(
                         FeatureState.features_list,
                         lambda feature: rx.el.option(
-                            feature, value=feature
+                            feature,
+                            value=feature,
+                            class_name="text-black font-medium",
                         ),
                     ),
                     default_value=FeatureState.selected_feature_1.to(
                         str
                     ),
                     on_change=FeatureState.select_feature_1,
-                    placeholder="Select Feature 1",
                     disabled=FeatureState.is_loading_features,
-                    class_name="mt-1 block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm",
+                    class_name="mt-1 block w-full pl-3 pr-10 py-3 text-base bg-white border-2 border-black text-black focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm font-medium shadow-[2px_2px_0px_#000000]",
                 ),
-                rx.cond(
-                    FeatureState.selected_feature_1.is_not_none(),
-                    _render_bar_chart(
-                        FeatureState.feature_1_chart_data,
-                        FeatureState.selected_feature_1,
-                        FeatureState.is_loading_data_1,
-                    ),
-                    rx.el.div(
-                        rx.el.p(
-                            "Please select a feature for column 1.",
-                            class_name="text-gray-500",
+                rx.el.div(
+                    rx.cond(
+                        FeatureState.selected_feature_1.is_not_none(),
+                        _render_bar_chart(
+                            FeatureState.feature_1_chart_data,
+                            FeatureState.selected_feature_1,
+                            FeatureState.is_loading_data_1,
                         ),
-                        class_name="mt-4 p-4 border border-dashed border-gray-300 rounded-lg bg-gray-50 min-h-[350px] flex items-center justify-center text-sm",
+                        rx.el.div(
+                            rx.el.p(
+                                "Select Feature A to view graph.",
+                                class_name="text-neutral-600 font-medium",
+                            ),
+                            class_name="mt-4 p-4 border-2 border-dashed border-neutral-400 bg-neutral-100 min-h-[350px] flex items-center justify-center text-sm",
+                        ),
                     ),
+                    class_name="mt-6",
                 ),
-                class_name="flex-1 p-4 space-y-4 bg-slate-50 rounded-xl shadow-md",
+                class_name="flex-1 p-6 space-y-4 bg-white border-2 border-black shadow-[6px_6px_0px_#000000]",
             ),
             rx.el.div(
                 rx.el.label(
-                    "Select Feature 2:",
-                    class_name="block text-md font-semibold text-gray-700 mb-2",
+                    "Feature B",
+                    class_name="block text-xl font-bold text-black mb-3",
                 ),
                 rx.el.select(
                     rx.el.option(
                         "Select Feature...",
                         value="",
                         disabled=FeatureState.is_loading_features,
+                        class_name="text-neutral-500",
                     ),
                     rx.foreach(
                         FeatureState.features_list,
                         lambda feature: rx.el.option(
-                            feature, value=feature
+                            feature,
+                            value=feature,
+                            class_name="text-black font-medium",
                         ),
                     ),
                     default_value=FeatureState.selected_feature_2.to(
                         str
                     ),
                     on_change=FeatureState.select_feature_2,
-                    placeholder="Select Feature 2",
                     disabled=FeatureState.is_loading_features,
-                    class_name="mt-1 block w-full pl-3 pr-10 py-2.5 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm",
+                    class_name="mt-1 block w-full pl-3 pr-10 py-3 text-base bg-white border-2 border-black text-black focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm font-medium shadow-[2px_2px_0px_#000000]",
                 ),
-                rx.cond(
-                    FeatureState.selected_feature_2.is_not_none(),
-                    _render_bar_chart(
-                        FeatureState.feature_2_chart_data,
-                        FeatureState.selected_feature_2,
-                        FeatureState.is_loading_data_2,
-                    ),
-                    rx.el.div(
-                        rx.el.p(
-                            "Please select a feature for column 2.",
-                            class_name="text-gray-500",
+                rx.el.div(
+                    rx.cond(
+                        FeatureState.selected_feature_2.is_not_none(),
+                        _render_bar_chart(
+                            FeatureState.feature_2_chart_data,
+                            FeatureState.selected_feature_2,
+                            FeatureState.is_loading_data_2,
                         ),
-                        class_name="mt-4 p-4 border border-dashed border-gray-300 rounded-lg bg-gray-50 min-h-[350px] flex items-center justify-center text-sm",
+                        rx.el.div(
+                            rx.el.p(
+                                "Select Feature B to view graph.",
+                                class_name="text-neutral-600 font-medium",
+                            ),
+                            class_name="mt-4 p-4 border-2 border-dashed border-neutral-400 bg-neutral-100 min-h-[350px] flex items-center justify-center text-sm",
+                        ),
                     ),
+                    class_name="mt-6",
                 ),
-                class_name="flex-1 p-4 space-y-4 bg-slate-50 rounded-xl shadow-md",
+                class_name="flex-1 p-6 space-y-4 bg-white border-2 border-black shadow-[6px_6px_0px_#000000]",
             ),
-            class_name="flex flex-col md:flex-row gap-8",
+            class_name="flex flex-col md:flex-row gap-10",
         ),
         on_mount=FeatureState.load_features,
-        class_name="p-6 md:p-10 bg-gradient-to-br from-slate-100 to-sky-100 min-h-screen font-['Inter']",
+        class_name="p-6 md:p-10 bg-yellow-200 min-h-screen font-['Inter']",
     )
