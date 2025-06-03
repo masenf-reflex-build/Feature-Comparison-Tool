@@ -128,7 +128,7 @@ def feature_comparison_dashboard() -> rx.Component:
     return rx.el.div(
         rx.el.h1(
             "Feature Experiment Dashboard",
-            class_name="text-4xl font-bold text-black mb-12 text-center tracking-tight",
+            class_name="text-4xl font-bold text-black mb-12 text-center tracking-tight font-['Archivo_Black']",
         ),
         rx.cond(
             FeatureState.error_message != "",
@@ -147,7 +147,7 @@ def feature_comparison_dashboard() -> rx.Component:
             rx.el.div(
                 rx.el.label(
                     "Feature A",
-                    class_name="block text-xl font-bold text-black mb-3",
+                    class_name="block text-xl font-bold text-black mb-3 font-['Archivo_Black']",
                 ),
                 rx.el.select(
                     rx.el.option(
@@ -194,7 +194,7 @@ def feature_comparison_dashboard() -> rx.Component:
             rx.el.div(
                 rx.el.label(
                     "Feature B",
-                    class_name="block text-xl font-bold text-black mb-3",
+                    class_name="block text-xl font-bold text-black mb-3 font-['Archivo_Black']",
                 ),
                 rx.el.select(
                     rx.el.option(
